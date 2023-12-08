@@ -1,0 +1,63 @@
+server:
+  port: 8084
+  servlet:
+    context-path: '/ead-notification/'
+
+spring:
+  application:
+    name: ead-notification-service
+  config:
+    import: 'optional:configserver:'     #Se não o configserver n estiver disponível, utiliza as configurações dessee projeto
+  cloud:
+    config:
+      discovery:
+        serviceId: ead-config-server
+  datasource:
+    url: jdbc:mysql://localhost:3306/ead_notification_v2?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  output:
+    ansi:
+      enabled: Always
+  rabbitmq:
+    addresses: amqps://enzmkuen:ZurBErLPG3B399NcSIqIN0bXmHb2bggN@moose.rmq.cloudamqp.com/enzmkuen     #Conexão da instância criada no Cloud AMQP
+
+
+logging:
+  level:
+    com.ead: TRACE
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate: INFO
+
+ead:
+  broker:
+    exchange:
+      notificationCommandExchange: ead.notificationcommand
+    queue:
+      notificationCommandQueue:
+        name: ead.notificationcommand.ms.notification
+    key:
+      notificationCommandKey: ms.notification
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - refresh
+          - health
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost
